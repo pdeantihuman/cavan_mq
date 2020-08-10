@@ -1,0 +1,7 @@
+[run-server]
+command=go run cmd/server/main.go
+cwd=<root>
+
+[run-client]
+command=go run cmd/client/main.go
+cwd=<root>
