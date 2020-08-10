@@ -18,7 +18,7 @@ import (
 
 var logPath = flag.String("log-path", "logs/http3.log", "http3的日志文件路径")
 
-var verbose = flag.Bool("verbose", false, "输出详细")
+var verbose = flag.Bool("verbose", true, "输出详细")
 
 func setupHandler() *http.ServeMux {
 	mux := http.NewServeMux()
