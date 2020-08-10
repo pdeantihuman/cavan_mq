@@ -17,7 +17,7 @@ import (
 
 var verbose = flag.Bool("verbose", false, "显示详细信息")
 
-const logPath = "server.log"
+const logPath = "logs/server.log"
 
 const addr = "localhost:4242"
 
@@ -62,21 +62,25 @@ func main() {
 	defer lf.Close()
 
 	defer logger.Init("LoggerExample", *verbose, true, lf).Close()
+	// 创建一个 quic 服务
 	listener, err := quic.ListenAddr(addr, generateTLSConfig(), nil)
+	defer listener.Close()
 	if err != nil {
-		logger.Fatalf("quic监听发生了错误: %v", err)
+		logger.Fatalf("quic服务创建失败: %v", err)
 	}
-	sess, err := listener.Accept(context.Background())
-	if err != nil {
-		logger.Fatalf("quic监听发生了错误: %v", err)
-	}
-	stream, err := sess.AcceptStream(context.Background())
-	if err != nil {
-		logger.Fatalf("quic监听发生了错误: %v", err)
-	}
-	// Echo through the loggingWriter
-	_, err = io.Copy(loggingWriter{stream}, stream)
-	if err != nil {
-		logger.Fatalf("quic监听发生了错误: %v", err)
+	for {
+		sess, err := listener.Accept(context.Background())
+		if err != nil {
+			logger.Fatalf("quic监听新连接时发生了错误: %v", err)
+		}
+		stream, err := sess.AcceptStream(context.Background())
+		if err != nil {
+			logger.Fatalf("quic获取新的流时发生了错误: %v", err)
+		}
+		// Echo through the loggingWriter
+		_, err = io.Copy(loggingWriter{stream}, stream)
+		if err != nil {
+			logger.Fatalf("quic写入输出流时发生了错误: %v", err)
+		}
 	}
 }

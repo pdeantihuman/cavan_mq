@@ -16,7 +16,7 @@ const message = "foobar"
 
 var verbose = flag.Bool("verbose", false, "显示详细信息")
 
-const logPath = "client.log"
+const logPath = "logs/client.log"
 
 func main() {
 	flag.Parse()
